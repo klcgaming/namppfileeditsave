@@ -29,6 +29,20 @@ function saveFileContent($file, $content) {
     file_put_contents($filePath, $content);
 }
 
+function createFolder($folderName) {
+    $folderPath = __DIR__ . '/' . $folderName;
+    if (!file_exists($folderPath)) {
+        mkdir($folderPath, 0777, true);
+    }
+}
+
+function createFile($fileName) {
+    $filePath = __DIR__ . '/' . $fileName;
+    if (!file_exists($filePath)) {
+        file_put_contents($filePath, '');
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
     if ($action === 'read') {
@@ -38,6 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $file = $_POST['file'];
         $content = $_POST['content'];
         saveFileContent($file, $content);
+    } elseif ($action === 'createFolder') {
+        $folderName = $_POST['folderName'];
+        createFolder($folderName);
+    } elseif ($action === 'createFile') {
+        $fileName = $_POST['fileName'];
+        createFile($fileName);
     }
     exit();
 }
@@ -59,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             cursor: pointer;
         }
 
-        .file {
+        .file, .folder {
             color: blue;
             text-decoration: underline;
             cursor: pointer;
@@ -76,6 +96,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if (event.target.classList.contains('file')) {
                     const fileName = event.target.dataset.file;
                     readFileContent(fileName);
+                } else if (event.target.classList.contains('folder')) {
+                    const folderName = prompt('Enter folder name:');
+                    if (folderName) {
+                        createFolder(folderName);
+                        location.reload();
+                    }
                 }
             });
 
@@ -115,3 +141,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <?php listFiles(__DIR__); ?>
 </body>
 </html>
+
